@@ -243,31 +243,31 @@ func unpack_mult(f *os.File, frames *[]Frame) {
 func main() {
 
     args := os.Args[1:]
-    w := 0
-    h := 0
+    var w, h int = 800, 600
     
     if len(args) == 0 {
         return
     }
-    
-    if len(args) == 4 && args[1] == "-c" {
-        w, _ = strconv.Atoi(args[2])
-        h, _ = strconv.Atoi(args[3])
-        if w == 0 || h == 0 {
-            fmt.Println("Width and height are incorrect")
-            return
-        }
-    }
 
     f, err := os.Open(args[0])
     if err != nil {
-        fmt.Println(err)
+        fmt.Println("Unable to open file", args[0])
         return
     }
     
     var frames []Frame
     unpack_mult(f, &frames)
-    if w > 0 {
+    
+    if len(args) > 2 && args[1] == "-c" {
+        if len(args) == 4 {
+            w, _ = strconv.Atoi(args[2])
+            h, _ = strconv.Atoi(args[3])
+            if w <= 0 || h <= 0 {
+                fmt.Println("Width and height are incorrect")
+                return
+            }
+        }
+        
         save_frames_on_canvas(args[0], frames, w, h)
     } else {
         save_frames(args[0], frames)
